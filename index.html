@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSM KOYA - سیستەمی بەڕێوەبردنی کڕیاران</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login/Signup Container -->
+    <div id="authContainer" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2>بەخێربێیت بۆ GSM KOYA</h2>
+                <p>تکایە چوونەژوورەوە بکە بۆ بەردەستکردنی سیستەمەکە</p>
+            </div>
+            <div id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="loginUsername">ناوی بەکارهێنەر</label>
+                    <input type="text" id="loginUsername" class="form-control" placeholder="ناوی بەکارهێنەر" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">تێپەڕەوشە</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button id="loginBtn" class="btn btn-primary btn-block">چوونەژوورەوە</button>
+                <div class="auth-footer">
+                    هەژمارت نییە? <a id="showSignupLink" class="auth-link">خۆت تۆمار بکە</a>
+                </div>
+            </div>
+            
+            <div id="signupForm" class="auth-form" style="display: none;">
+                <div class="form-group">
+                    <label for="signupUsername">ناوی بەکارهێنەر</label>
+                    <input type="text" id="signupUsername" class="form-control" placeholder="ناوی بەکارهێنەر" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">تێپەڕەوشە</label>
+                    <input type="password" id="signupPassword" class="form-control" placeholder="••••••••" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupConfirmPassword">دووبارەکردنەوەی تێپەڕەوشە</label>
+                    <input type="password" id="signupConfirmPassword" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button id="signupBtn" class="btn btn-primary btn-block">تۆمارکردن</button>
+                <div class="auth-footer">
+                    هەژمارت هەیە? <a id="showLoginLink" class="auth-link">چوونەژوورەوە</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="appContent" class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    GSM KOYA
+                    <i>📱</i>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-tab="customers">
+                        <span>لیستی کڕیاران</span>
+                        <i>👥</i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-tab="newCustomer">
+                        <span>کڕیاری نوێ</span>
+                        <i>➕</i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="logoutBtn">
+                        <span>چوونەدەرەوە</span>
+                        <i>🚪</i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1 class="page-title">سیستەمی بەڕێوەبردنی کڕیاران</h1>
+                <div class="user-profile">
+                    <span id="usernameDisplay"></span>
+                    <div class="user-avatar" id="userAvatar"></div>
+                </div>
+            </div>
+            
+            <!-- Customers Tab -->
+            <div id="customersTab" class="tab-content active fade-in">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">لیستی کڕیاران</h2>
+                        <div class="search-container d-flex">
+                            <input type="text" id="searchInput" class="form-control" placeholder="گەڕان بە ناو یان ژمارە...">
+                            <button id="clearSearchBtn" class="btn btn-warning btn-sm">پاککردنەوە</button>
+                        </div>
+                    </div>
+                    <ul class="customer-list" id="customerList">
+                        <!-- Customer list will appear here -->
+                    </ul>
+                </div>
+                
+                <!-- Danger Zone -->
+                <div class="danger-zone">
+                    <h2>ناوچەی مەترسیدار</h2>
+                    <div class="text-center">
+                        <button id="deleteAllCustomersBtn" class="btn btn-danger">سڕینەوەی هەموو کڕیاران</button>
+                        <p class="text-muted mt-3">ئاگاداربە! ئەم کارە ناتوانرێت بیگەڕێنیتەوە</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- New Customer Tab -->
+            <div id="newCustomerTab" class="tab-content fade-in">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">تۆمارکردنی کڕیاری نوێ</h2>
+                    </div>
+                    <form id="customerForm">
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="customerName">ناوی تەواوی کڕیار</label>
+                                    <input type="text" id="customerName" class="form-control" placeholder="ناوی کڕیار" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="customerPhone">ژمارەی مۆبایل</label>
+                                    <input type="text" id="customerPhone" class="form-control" placeholder="ژمارەی مۆبایل">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerType">جۆری کڕیار</label>
+                            <select id="customerType" class="form-control">
+                                <option value="normal">کڕیاری ئاسایی</option>
+                                <option value="vip">کڕیاری VIP</option>
+                                <option value="wholesale">کڕیاری گشتی</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">تۆمارکردنی کڕیار</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Customer Sales Section -->
+            <div id="salesFormContainer" class="d-none">
+                <div class="card">
+                    <button id="backToCustomersBtn" class="btn btn-secondary mb-3">گەڕانەوە بۆ لیستی کڕیاران</button>
+                    <div class="card-header">
+                        <h2 class="card-title" id="currentCustomerName"></h2>
+                    </div>
+                    <div class="customer-info" id="customerInfo"></div>
+                    
+                    <form id="salesForm">
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="itemType">جۆری کاڵا</label>
+                                    <input type="text" id="itemType" class="form-control" placeholder="جۆری کاڵا" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="itemPrice">نرخ</label>
+                                    <input type="number" id="itemPrice" class="form-control" placeholder="نرخ" value="0" min="0" step="0.01" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="itemQuantity">ژمارە</label>
+                                    <input type="number" id="itemQuantity" class="form-control" placeholder="ژمارە" value="1" min="1" required>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="itemCategory">جۆر</label>
+                                    <select id="itemCategory" class="form-control">
+                                        <option value="mobile">مۆبایل</option>
+                                        <option value="accessory">ئاکسسوار</option>
+                                        <option value="sim">سیم کارت</option>
+                                        <option value="service">خزمەتگوزاری</option>
+                                        <option value="other">جۆری تر</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">زیادکردنی کاڵا</button>
+                    </form>
+                    
+                    <div class="table-responsive mt-4">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>کاڵا</th>
+                                    <th>نرخ</th>
+                                    <th>ژمارە</th>
+                                    <th>کۆی نرخ</th>
+                                    <th>جۆر</th>
+                                    <th>بەروار</th>
+                                    <th>کردارەکان</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesData">
+                                <!-- Sales items will appear here -->
+                            </tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td colspan="3">کۆی گشتی</td>
+                                    <td id="totalAmount">0.00</td>
+                                    <td colspan="3"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <button id="generatePdfBtn" class="btn btn-success">پاشەکەوتکردن وەک PDF</button>
+                        <button id="exportDataBtn" class="btn btn-info">دەرکردنی داتا</button>
+                        <button id="importDataBtn" class="btn btn-warning">هێنانەوەی داتا</button>
+                        <input type="file" id="fileInput" accept=".json" style="display: none;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
